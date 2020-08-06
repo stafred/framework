@@ -8,6 +8,17 @@
             "email": "stafred.framework@gmail.com"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "Stafred\\": "src/fork/",
+            "Stafred\\Primary": "src/fork/primary/",
+        },
+        "classmap": [
+            "src/fork/",
+        ],
+        "files": [
+        ]
+    },
     "minimum-stability": "dev",
     "require": {}
 }
