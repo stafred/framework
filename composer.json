@@ -1,0 +1,13 @@
+{
+    "name": "stafred/framework",
+    "description": "The Stafred Framework.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Stafred",
+            "email": "stafred.framework@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
