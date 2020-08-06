@@ -11,7 +11,7 @@
     "autoload": {
         "psr-4": {
             "Stafred\\": "src/fork/",
-            "Stafred\\Primary": "src/fork/primary/"
+            "Stafred\\Primary\\": "src/fork/primary/"
         },
         "classmap": [
             "src/fork/"
