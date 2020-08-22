@@ -63,7 +63,7 @@ class ConnectionBuilder extends ConnectionHelper
      * connect
      */
     public function __destruct()
-    {
+    {asdasd
         $this->connect();
     }
 }
