@@ -43,6 +43,8 @@ final class ResultManager
     }
 
     /**
+     * WARNING
+     * Possibly the result of an error. You will need to fix.
      * @param int $style
      * @return array|null
      */
@@ -51,11 +53,11 @@ final class ResultManager
         if ($this->count <= 0) {
             return NULL;
         } else if ($this->count == 1) {
-            return $this->statment->fetchAll($style)[0];
+            return $this->statment->fetchAll($style);
         } else {
             $result = [];
             do {
-                $result[] = $this->statment->fetchAll($style)[0];
+                $result[] = $this->statment->fetchAll($style);
             } while ($this->statment->nextRowset());
             return $result;
         }

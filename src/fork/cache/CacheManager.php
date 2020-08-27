@@ -8,5 +8,5 @@ namespace Stafred\Cache;
  */
 final class CacheManager extends CacheHelper
 {
-    
+
 }

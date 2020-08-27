@@ -39,6 +39,63 @@ class QueryService
      */
     protected $security = true;
 
+
+    /*public - start*/
+
+    /**
+     * @param bool $separator
+     * @return string
+     */
+    final public function toString(): string
+    {
+        return $this->query;
+    }
+
+    /**
+     * @return array
+     */
+    final public function getProperties(): array
+    {
+        return $this->properties;
+    }
+
+    /**
+     * @param $get_id
+     * @return ResultManager
+     */
+    final public function get($get_id = false): ResultManager
+    {
+        if ($this->isMissingDB()) {(
+            new \Stafred\Database\ConnectionBuilder()
+		)
+			->connect();
+        }
+
+        if ($get_id === true) {
+            $this->executeLastId();
+        } else {
+            $this->execute();
+        }
+
+        return new ResultManager(
+            $this->statment,
+            $this->countQuery,
+            $this->lastID
+        );
+    }
+
+    /**
+     * @return int
+     */
+    final public function getID(): int
+    {
+        if ($this->isInsert()) $this->executeLastId();
+        return $this->lastID;
+    }
+
+    /*public - finish*/
+
+
     /**
      * QueryService constructor.
      */
@@ -119,51 +176,6 @@ class QueryService
     }
 
     /**
-     * @param bool $separator
-     * @return string
-     */
-    final public function toString(): string
-    {
-        return $this->query;
-    }
-
-    /**
-     * @return array
-     */
-    final public function getProperties(): array
-    {
-        return $this->properties;
-    }
-
-    /**
-     * @param $get_id
-     * @return ResultManager
-     */
-    final public function get($get_id = false): ResultManager
-    {
-        if ($get_id === true) {
-            $this->executeLastId();
-        } else {
-            $this->execute();
-        }
-
-        return new ResultManager(
-            $this->statment,
-            $this->countQuery,
-            $this->lastID
-        );
-    }
-
-    /**
-     * @return int
-     */
-    public function getID(): int
-    {
-        if ($this->isInsert()) $this->executeLastId();
-        return $this->lastID;
-    }
-
-    /**
      * @return bool
      */
     private function isInsert(): bool
@@ -172,15 +184,19 @@ class QueryService
     }
 
     /**
+     * @return string
+     */
+    private function getKeyPDO(): string
+    {
+        return DATABASE_DRIVER . DATABASE_HOST . DATABASE_NAME;
+    }
+
+    /**
      * @return \PDO
      */
     private function getPDO(): \PDO
     {
-        return CacheManager::getSharedStorageDB(
-            DATABASE_DRIVER .
-            DATABASE_HOST .
-            DATABASE_NAME
-        );
+        return CacheManager::getSharedStorageDB($this->getKeyPDO());
     }
 
     /**
@@ -250,10 +266,10 @@ class QueryService
     {
         $operators = '[=\>\<\!]{1,3}';
         $pattern = implode("|", [
-            '\s*'.$operators.'\s*[\'\"]', /*pattern string right*/
-            '[\'\"]\s*'.$operators.'\s*', /*pattern string left*/
-            '\s*'.$operators.'\s*[\d]+', /*pattern number right*/
-            '[\d]+\s*'.$operators.'\s*', /*pattern number left*/
+            '\s*' . $operators . '\s*[\'\"]', /*pattern string right*/
+            '[\'\"]\s*' . $operators . '\s*', /*pattern string left*/
+            '\s*' . $operators . '\s*[\d]+', /*pattern number right*/
+            '[\d]+\s*' . $operators . '\s*', /*pattern number left*/
         ]);
         preg_match_all("/$pattern/", $query, $matcher);
         return count($matcher[0]);
@@ -278,9 +294,16 @@ class QueryService
     {
         if ($security === false) return;
         $countTotal = $this->getCountParams($this->toString());
-        //var_dump('result: ' . $countTotal);
         if ($countTotal > 0) {
             throw new \Stafred\Exception\SQLSecurityParametersException();
         }
+    }
+
+    /**
+     * @return bool
+     */
+    private function isMissingDB()
+    {
+        return empty(DATABASE_PRELOAD) && !CacheManager::existsKeyStorageDB($this->getKeyPDO());
     }
 }

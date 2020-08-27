@@ -12,6 +12,6 @@ final class LoaderBuilder
      */
     public function __construct()
     {
-        (new ClassLoader())->mountPrimary();
+        (new ClassLoader())->mount();
     }
 }

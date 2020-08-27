@@ -1,4 +1,5 @@
 <?php
+
 namespace Stafred\Kernel;
 
 /**
@@ -8,18 +9,27 @@ namespace Stafred\Kernel;
 class ClassList
 {
     /**
-     * configuration loader of primary classes
+     * configuration loader of master-classes
      * ---------------------------------------
      * if you need to add to the initial load,
      * then specify the required class here
      * ---------------------------------------
      * Classes Builders
      */
-    const PRIMARY = [
+    const MASTER = [
         \Stafred\Header\HeaderBuilder::class,
+        \Stafred\Header\CorsBuilder::class,
         \Stafred\Session\SessionBuilder::class,
         \Stafred\Security\SecurityBuilder::class,
         \Stafred\Database\ConnectionBuilder::class,
-        \Stafred\Routing\RouteBuilder::class,
+        \Stafred\Routing\RoutingBuilder::class,
+    ];
+
+    const SLAVE = [
+        \Stafred\Session\SessionWrapper::class
+    ];
+
+    const ADDON = [
+
     ];
 }

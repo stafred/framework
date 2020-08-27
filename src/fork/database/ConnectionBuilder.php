@@ -48,11 +48,19 @@ class ConnectionBuilder extends ConnectionHelper
     }
 
     /**
+     * @return bool
+     */
+    private function isShared()
+    {
+        return CacheManager::existsKeyStorageDB($this->getKey());
+    }
+
+    /**
      * connect primary DB
      */
-    private function connect()
+    final public function connect()
     {
-        if (!$this->isNameEmpty()) {
+        if (!$this->isNameEmpty() || $this->isShared()) {
             $this->sharedStorage(
                 $this->PDO()
             );
@@ -64,6 +72,8 @@ class ConnectionBuilder extends ConnectionHelper
      */
     public function __destruct()
     {
-        $this->connect();
+        if(DATABASE_PRELOAD) {
+            $this->connect();
+        }
     }
 }

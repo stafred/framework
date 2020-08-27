@@ -38,4 +38,31 @@ final class Arr
             $use_key
         );
     }
+
+    /**
+     * @param mixed ...$value
+     * @return array
+     */
+    public static function merge(...$value)
+    {
+        return self::toOne($value, false);
+    }
+
+    /**
+     * @param mixed ...$value
+     * @return array
+     */
+    public static function combine(...$value)
+    {
+        return self::toOne($value, true);
+    }
+
+    /**
+     * @param array $value
+     * @return string
+     */
+    public static function hash(array $value): string
+    {
+        return md5(json_encode($value));
+    }
 }

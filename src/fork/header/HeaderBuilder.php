@@ -1,4 +1,5 @@
 <?php
+
 namespace Stafred\Header;
 
 /**
@@ -20,15 +21,10 @@ final class HeaderBuilder extends HeaderHelper
     public function __construct(string $contentType = NULL, bool $change = false)
     {
         $this->contentType = $contentType;
-        if(!$change) {
+        if (!$change) {
             $this->makeContentType();
         }
         $this->setPowerBy();
-        if($this->getAccessCors()){
-            $this->setAllowHeaders();
-            $this->setAllowOrigin();
-            $this->setAllowMethods();
-            $this->setTokenVerification();
-        }
+
     }
 }

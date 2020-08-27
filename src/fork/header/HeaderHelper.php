@@ -6,11 +6,11 @@ namespace Stafred\Header;
  * Class HeaderHelper
  * @package Stafred\Header
  */
-class HeaderHelper extends CorsManager
+class HeaderHelper
 {
     final public function makeContentType()
     {
-        switch($this->contentType) {
+        switch ($this->contentType) {
             case NULL:
                 $type = ContentType::HTML . $this->setCharset();
                 break;
@@ -20,31 +20,33 @@ class HeaderHelper extends CorsManager
             default:
                 $type = $this->contentType;
         }
-        header('Content-Type: ' . $type);
+        $this->setHeader("Content-Type", $type);
     }
 
     final public function setPowerBy()
     {
         $by = (empty(HEADERS_POWERED_BY))
             ? "unknown"
-            : HEADERS_POWERED_BY
-        ;
-        header("X-Powered-By: " . $by);
+            : HEADERS_POWERED_BY;
+        $this->setHeader("X-Powered-By", $by);
+    }
+
+    /**
+     * @param string $key
+     * @param string $value
+     */
+    final public function setHeader(string $key, string $value)
+    {
+        try {
+            header("$key: " . $value);
+        } catch (\Throwable $t) {}
     }
 
     /**
      * @return string
      */
-    protected function setCharset(): string
+    private function setCharset(): string
     {
         return ';charset=' . HEADERS_DEFAULT_CHAR;
-    }
-
-    /**
-     * @return bool
-     */
-    protected function getAccessCors(): bool
-    {
-        return HEADERS_CORS;
     }
 }
