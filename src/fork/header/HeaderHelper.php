@@ -20,7 +20,7 @@ class HeaderHelper
             default:
                 $type = $this->contentType;
         }
-        $this->setHeader("Content-Type", $type);
+        //$this->setHeader("Content-Type", $type);
     }
 
     final public function setPowerBy()
@@ -28,7 +28,7 @@ class HeaderHelper
         $by = (empty(HEADERS_POWERED_BY))
             ? "unknown"
             : HEADERS_POWERED_BY;
-        $this->setHeader("X-Powered-By", $by);
+        //$this->setHeader("X-Powered-By", $by);
     }
 
     /**

@@ -17,12 +17,13 @@ class ClassList
      * Classes Builders
      */
     const MASTER = [
-        \Stafred\Header\HeaderBuilder::class,
         \Stafred\Header\CorsBuilder::class,
         \Stafred\Session\SessionBuilder::class,
         \Stafred\Security\SecurityBuilder::class,
+        \Stafred\Cookie\CookieBuilder::class,
         \Stafred\Database\ConnectionBuilder::class,
         \Stafred\Routing\RoutingBuilder::class,
+        \Stafred\Header\HeaderBuilder::class,
     ];
 
     const SLAVE = [

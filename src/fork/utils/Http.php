@@ -75,8 +75,6 @@ final class Http implements IHttp
 
     public static function isSecurity(): bool
     {
-        return false;
+        return isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === 'on';
     }
-    
-    
 }

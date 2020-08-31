@@ -50,7 +50,7 @@ final class Hash
     {
         return hash(
             $algo,
-            APP_SECRET_KEY .
+            env('APP_SECRET_KEY') .
             Http::getUserIp() .
             microtime(true) .
             rand(1, 1000000) .

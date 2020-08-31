@@ -13,3 +13,34 @@ if (!function_exists('env')) {
         }
     }
 }
+
+if (!function_exists('debug')) {
+    /**
+     * @param mixed ...$var
+     */
+    function debug(...$var)
+    {
+        dd($var);
+    }
+}
+
+if (!function_exists('cookie')) {
+    /**
+     * @param string|null $name
+     * @return \Stafred\Cookie\CookieHelper
+     */
+    function cookie(string $name)
+    {
+        return new \Stafred\Cookie\CookieHelper($name);
+    }
+}
+
+if (!function_exists('session')) {
+    /**
+     * @return \Stafred\Session\SessionHelper
+     */
+    function session()
+    {
+        return new \Stafred\Session\SessionHelper();
+    }
+}

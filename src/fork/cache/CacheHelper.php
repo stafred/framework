@@ -27,7 +27,20 @@ class CacheHelper
      * @var array
      */
     protected static $sharedStorage = [];
-    
+
+    /**
+     * @return array
+     */
+    final public static function getAllStorage(): array
+    {
+        return [
+            "hashSessionStorage" => self::$hashSessionStorage,
+            "sharedSessionStorage" => self::$sharedSessionStorage,
+            "sharedStorageDB" => self::$sharedStorageDB,
+            "sharedStorage" => self::$sharedStorage,
+        ];
+    }
+
     /**
      * @return array
      */

@@ -2,6 +2,7 @@
 namespace Stafred\Session;
 
 use Stafred\Cache\CacheManager;
+use Stafred\Cookie\CookieHelper;
 
 /**
  * Class SessionBuilder
@@ -11,24 +12,17 @@ final class SessionBuilder extends SessionHelper
 {
     /**
      * SessionBuilder constructor.
+     * @throws \Exception
      */
     public function __construct()
     {
-        if(empty($this->getName())){
-            $this->setName();
-        }
+        $cookie = $this->cookie();
 
-        if($this->missing()){
+        if(!$cookie->isset()) {
             $this->create();
-        } else {
+        }
+        else {
             $this->read();
         }
-
-        $this->setHash();
-    }
-
-    private function setHash()
-    {
-        CacheManager::setHashSessionStorage();
     }
 }
