@@ -44,9 +44,7 @@ final class CorsBuilder extends HeaderHelper
     private function setAllowMethods(string $methods = NULL)
     {
         $accessMethods = constant('HEADERS_ALLOW_METHODS');
-        $accessMethods = empty($accessMethods)
-            ? NULL
-            : $accessMethods;
+        $accessMethods = empty($accessMethods) ? NULL : $accessMethods;
         $accessMethods = empty($methods) ? $accessMethods : $methods;
         if (!empty($accessMethods)){
             $this->setHeader("Access-Control-Allow-Methods" , $accessMethods);
@@ -95,7 +93,8 @@ final class CorsBuilder extends HeaderHelper
             $token = \Stafred\Utils\Hash::value(
                 Http::getUserIp() .
                 Http::getQueryString() .
-                Http::getRequestMethod()
+                Http::getRequestMethod(),
+                'crc32'
             );
             $this->setHeader("X-{$name}" , $token);
         }

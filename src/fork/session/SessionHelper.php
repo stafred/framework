@@ -4,7 +4,6 @@ namespace Stafred\Session;
 
 use Stafred\Cache\CacheManager;
 use Stafred\Cookie\CookieHelper;
-use Stafred\Utils\Arr;
 use Stafred\Utils\Hash;
 use Stafred\Utils\Http;
 
@@ -56,9 +55,6 @@ class SessionHelper
         $this->setOutputSymlink();
 
         $this->putAllCache($this->defaultSession);
-
-        cookie('name')->set($this->getName());
-        cookie('_output')->set($this->getOutputSecurity());
     }
 
     /**
@@ -124,9 +120,9 @@ class SessionHelper
 
     private function setOutputSecurity()
     {
-        $this->defaultSession["_security"] = !isset($_SERVER["SSL_SESSION_ID"])
-            ? Hash::random('whirlpool')
-            : Hash::value(substr($_SERVER["SSL_SESSION_ID"], 0, 32), 'whirlpool');
+        $this->defaultSession["_security"] = Http::isSecurity()
+            ? Hash::value(substr($_SERVER["SSL_SESSION_ID"], 0, 32), 'whirlpool')
+            : Hash::random('whirlpool');
     }
 
     private function setOutputName()
@@ -135,7 +131,7 @@ class SessionHelper
     }
 
     /**
-     * @return string
+     *
      */
     private function setOutputSymlink(): void
     {
@@ -179,7 +175,6 @@ class SessionHelper
     }
 
     /**
-     * @param string|null $name
      * @return string
      */
     private function getName(): string
