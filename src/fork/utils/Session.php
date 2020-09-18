@@ -3,7 +3,7 @@
 namespace Stafred\Utils;
 
 use Stafred\Session\SessionInterface;
-use Stafred\Session\SessionHelper;
+use Stafred\Session\SessionDecorator;
 
 /**
  * Class Session
@@ -12,17 +12,17 @@ use Stafred\Session\SessionHelper;
 final class Session implements SessionInterface
 {
     /**
-     * @var Session|null
+     * @var SessionDecorator|null
      */
     private static $instance = null;
 
     /**
      * @return Session
      */
-    private static function getInstance(): SessionHelper
+    private static function getInstance(): SessionDecorator
     {
         if (self::$instance === null) {
-            self::$instance = new SessionHelper();
+            self::$instance = new SessionDecorator();
         }
 
         return self::$instance;
@@ -34,7 +34,7 @@ final class Session implements SessionInterface
      */
     public static function all(bool $arr = true)
     {
-        return self::getInstance()->all($arr);
+        return self::getInstance()->getAll($arr);
     }
 
     /**
@@ -43,7 +43,7 @@ final class Session implements SessionInterface
      */
     public static function get(string $key)
     {
-        return self::getInstance()->get($key);
+        return self::getInstance()->getValue($key);
     }
 
     /**
@@ -52,9 +52,9 @@ final class Session implements SessionInterface
      * @return mixed
      * @throws \Exception
      */
-    public static function put(string $key, $value): void
+    public static function set(string $key, $value): void
     {
-        self::getInstance()->put($key, $value);
+        self::getInstance()->setValue($key, $value);
     }
 
     private function __construct()

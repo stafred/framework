@@ -2,11 +2,12 @@
 
 namespace Stafred\Cookie;
 
-
 use Stafred\Exception\SessionProtocolErrorException;
 use Stafred\Exception\SessionNameNotDefinedException;
+use Stafred\Kernel\TimeService;
 use Stafred\Utils\Arr;
 use Stafred\Utils\Http;
+use Stafred\Utils\Session;
 
 /**
  * Class CookieBuilder
@@ -21,6 +22,8 @@ final class CookieBuilder extends CookieHelper
      */
     public function __construct()
     {
+        TimeService::start(__CLASS__);
+
         $this->session();
         $this->security();
     }
@@ -30,18 +33,23 @@ final class CookieBuilder extends CookieHelper
      */
     private function session()
     {
-        $value = $this->encode(Arr::receive(
-            ['_name', '_code', '_security'], $this->getSession()
-        ));
+        $cookie = Arr::receive(
+            ['_name', '_code', '_security', /*'_ckscr'*/], $this->getSession()
+        );
+        $cookieSecure = Session::get('_https');
+
+        /*@deprecated*/
+        /*$cookie['_ckscr'] = $this->encodeSecure($cookieSecure, $cookie['_code']);*/
 
         parent::__construct();
+
         $this->set()->all([
             'name' => env('SESSION_HEADER_NAME'),
-            'value' => $value,
+            'value' => $this->encode($cookie),
             'expires' => env("COOKIE_SET_EXPIRES"),
             'path' => env("COOKIE_SET_PATH"),
             'domain' => env("COOKIE_SET_DOMAIN"),
-            'secure' => Http::isSecurity(),
+            'secure' => $cookieSecure,
             'httponly' => env("COOKIE_SET_HTTPONLY"),
             'samesite' => env("COOKIE_SET_SAMESITE")
         ])->make();
@@ -49,11 +57,11 @@ final class CookieBuilder extends CookieHelper
 
     private function security()
     {
-        $this->csrf();
+
     }
 
-    private function csrf()
+    public function __destruct()
     {
-
+        TimeService::finish(__CLASS__);
     }
 }

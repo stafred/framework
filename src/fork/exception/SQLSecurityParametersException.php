@@ -1,6 +1,7 @@
 <?php
 
 namespace Stafred\Exception;
+use Stafred\Utils\Header;
 use Throwable;
 
 /**
@@ -14,6 +15,9 @@ final class SQLSecurityParametersException extends \Exception
      */
     public function __construct()
     {
+        $header = Header::make();
+        $header->setStatus(500);
+        $header->setStatusText('Error security');
         $message =
             "A blocked SQL query that compromises the security of the application. ".
             "All SQL query values must have a special character. " .

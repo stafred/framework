@@ -5,6 +5,7 @@ namespace Stafred\Cookie;
 use Stafred\Exception\CookieCreateErrorException;
 use Stafred\Exception\CookieMissingParameterException;
 use Stafred\Utils\Arr;
+use Stafred\Utils\Session;
 
 /**
  * Class CookieSetDecorator
@@ -139,7 +140,16 @@ final class CookieSetDecorator
             'samesite' => $this->samesite
         ];
 
-        if (empty($this->samesite)) {
+        $session_secure =  Session::get('_https');
+        $env_secure = env('SESSION_HTTPS_ENABLE');
+        $cookie_secure = $this->secure;
+
+        if(strtolower($this->samesite) == 'none' && $this->secure === false) {
+            $cookie['secure'] = true;
+        }
+
+        if(!$env_secure) {
+            $cookie['secure'] = false;
             unset($cookie['samesite']);
         }
 

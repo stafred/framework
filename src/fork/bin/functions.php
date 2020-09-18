@@ -6,6 +6,10 @@ if (!function_exists('env')) {
      */
     function env(string $value)
     {
+        $value = strtoupper(
+            preg_replace("/[\.\-]/", "_", $value)
+        );
+
         if(!defined($value)) {
             return false;
         } else {
@@ -32,6 +36,16 @@ if (!function_exists('cookie')) {
     function cookie(string $name)
     {
         return new \Stafred\Cookie\CookieHelper($name);
+    }
+}
+
+if (!function_exists('session')) {
+    /**
+     * @return \Stafred\Session\SessionHelper
+     */
+    function session()
+    {
+        return new \Stafred\Session\SessionHelper();
     }
 }
 

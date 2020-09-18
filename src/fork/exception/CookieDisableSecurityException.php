@@ -3,6 +3,7 @@
 namespace Stafred\Exception;
 
 use Exception;
+use Stafred\Utils\Header;
 
 /**
  * Class CookieDisableSecurityException
@@ -15,6 +16,10 @@ final class CookieDisableSecurityException extends Exception
      */
     public function __construct()
     {
+        $header = Header::make();
+        $header->setStatus(500);
+        $header->setStatusText('Error cookie');
+
         $message =
             'You have disabled security for the HTTPS connection (your setting: set.httponly=false).';
         $code = 500;

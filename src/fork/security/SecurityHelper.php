@@ -2,6 +2,7 @@
 
 namespace Stafred\Security;
 
+use Stafred\Utils\Arr;
 use Stafred\Utils\Http;
 
 class SecurityHelper
@@ -43,5 +44,13 @@ class SecurityHelper
         if ($https === true && $secure === false) {
             throw new \Stafred\Exception\SessionProtocolErrorException();
         }
+    }
+
+    protected function sessionClearOlder()
+    {
+        if(Http::isAjax()) return;
+        $time = env('SESSION_FILE_LIFETIME');
+        $dir  = env('SESSION_FILE_DIRPATH');
+        //debug(Arr::cutValue(['.','..','.keep'],scandir($dir)));
     }
 }

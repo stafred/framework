@@ -4,8 +4,15 @@ namespace Stafred\Session;
 
 use Stafred\Cache\CacheManager;
 use Stafred\Cookie\CookieHelper;
+use Stafred\Exception\SessionErrorException;
+use Stafred\Exception\SessionNotFoundException;
+use Stafred\Header\HeaderHelper;
+use Stafred\Security\Encrypt;
+use Stafred\Utils\Cookie;
 use Stafred\Utils\Hash;
+use Stafred\Utils\Header;
 use Stafred\Utils\Http;
+use Stafred\Utils\Str;
 
 /**
  * Class SessionHelper
@@ -16,23 +23,33 @@ class SessionHelper
     /**
      * @var string
      */
-    protected $sessionCode;
+    private $code;
+    /**
+     * @var string
+     */
+    private $value;
 
     /**
      * @var string
      */
-    protected $defaultPath = "/factory/storage/session";
+    protected $defaultPath = "../factory/storage/session";
 
     /**
      * @var array
      */
     protected $defaultSession = [
-        "_name" => NULL,
-        "_code" => NULL,
+        "_name"     => NULL,
+        "_code"     => NULL,
         "_security" => NULL,
-        "_csrf" => NULL,
-        "_ip" => NULL
+        "_https"    => NULL,
+        "_csrf"     => NULL,
+        "_ip"       => NULL
     ];
+
+    /***
+     * @var
+     */
+    protected $sessionHeaderName;
 
     /********************/
 
@@ -41,41 +58,53 @@ class SessionHelper
      */
     protected function cookie(): CookieHelper
     {
-        return new CookieHelper(env("SESSION_HEADER_NAME"));
+        return new CookieHelper($this->getHeaderName());
+    }
+
+    /**
+     * @return Header
+     */
+    protected function header(): Header {
+        return Header::make();
     }
 
     protected function create()
     {
-        /*master*/
         $this->setIp();
         $this->setOutputSecurity();
         $this->setOutputCode();
-        /*slave*/
         $this->setOutputName();
         $this->setOutputSymlink();
+        $this->setOutputProtocol();
+        $this->putAllCache($this->defaultSession);
+    }
 
+    protected function recreate()
+    {
+        $this->setIp();
+        $this->setOutputCode();
+        $this->setInputName();
         $this->putAllCache($this->defaultSession);
     }
 
     /**
-     * @throws \Exception
+     * @return string
      */
-    protected function read()
+    protected function read(): string
     {
-        $this->setInputSymlink();
-        $this->putAllCache($this->unserialize($this->open()));
-        /*master*/
-        $this->setIp();
-        $this->setOutputSecurity();
-        $this->setOutputCode();
+        $cookie = $this->cookie();
 
-        $this->putAllCache($this->defaultSession);
+        $_name = $cookie->key('_name')->getValue();
+        $_security = $cookie->key('_security')->getValue();
+        $this->code = $cookie->key('_code')->getValue();
+        return $this->setInputSymlink($_name, $_security);
+    }
 
-//        $this->getInputSecurity();
-//        $this->setOutputSecurity();
-
-        cookie('name')->set($this->getName());
-        cookie('_input')->set($this->getOutputSecurity());
+    protected function get()
+    {
+        $this->defaultSession = $this->unserialize(
+            file_get_contents($this->getSymlink())
+        );
     }
 
     protected function write(array $value)
@@ -100,9 +129,77 @@ class SessionHelper
     protected function putAllCache(array $value): void
     {
         CacheManager::putAllSessionStorage($value);
-        $this->defaultSession = $value;
+        $this->defaultSession = NULL;
     }
 
+    /**
+     * @return bool
+     */
+    protected function exists(): bool
+    {
+        return file_exists($this->getSymlink());
+    }
+
+    /**
+     * @return bool
+     */
+    protected function missing(): bool
+    {
+        return !file_exists($this->getSymlink());
+    }
+
+    /**
+     * @return bool
+     */
+    protected function failed(): bool
+    {
+        return $this->code !== $this->defaultSession['_code'];
+    }
+
+    protected function clear()
+    {
+        $cookie = $this->cookie()->set();
+        $cookie->setName($this->getHeaderName());
+        $cookie->setValue(NULL);
+        $cookie->setExpires(time() - 3600);
+    }
+
+    protected function remove()
+    {
+        if (file_exists($this->getSymlink())) {
+            unlink($this->getSymlink());
+        }
+    }
+
+    /**
+     * @throws SessionErrorException
+     */
+    protected function reloadPage()
+    {
+        /*env('SESSION_SECURITY_RELOAD')*/
+        if (Http::isAjax()) {
+            throw new SessionErrorException();
+        }
+        else {
+            $this->header()->redirectIndex();
+        }
+    }
+
+    /**
+     * @return string
+     */
+    protected function getSessionCode(): string
+    {
+        return $this->sessionCode;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function getProtocol(): bool
+    {
+        return $this->defaultSession['_https'];
+    }
     /********************/
 
     private function setIp()
@@ -130,9 +227,6 @@ class SessionHelper
         $this->defaultSession["_name"] = Hash::random('md5', 'new_session_name');
     }
 
-    /**
-     *
-     */
     private function setOutputSymlink(): void
     {
         $symlink = $this->path() . $this->prefix() . '_' .
@@ -142,6 +236,12 @@ class SessionHelper
             );
         CacheManager::setSharedSessionStorage('symlink', $symlink);
     }
+
+    private function setOutputProtocol()
+    {
+        $this->defaultSession["_https"] = Http::isSecurity();
+    }
+
 
     /**
      * @return string
@@ -155,16 +255,19 @@ class SessionHelper
     /******* INPUT ******/
     /********************/
 
-    private function setInputSymlink()
+    /**
+     * @param string $name
+     * @param string $security
+     * @return string
+     */
+    private function setInputSymlink(string $name, string $security): string
     {
-        $cookie = $this->cookie();
-        $_name = $cookie->key('_name')->getValue();
-        $_security = $cookie->key('_security')->getValue();
         $symlink = $this->path() . $this->prefix() . '_' .
-            $this->file($_name, $_security);
-        CacheManager::setSharedSessionStorage('symlink', $symlink);
-    }
+            $this->file($name, $security);
 
+        CacheManager::setSharedSessionStorage('symlink', $symlink);
+        return $symlink;
+    }
 
     /**
      * @return string
@@ -182,6 +285,17 @@ class SessionHelper
         return $this->defaultSession["_name"];
     }
 
+    private function setInputName(): void
+    {
+        $value = cookie($this->getHeaderName())->key('_name')->getValue();
+        /*warning: maybe injection code hack*/
+        $this->defaultSession['_name'] = Str::cut(Str::PATTERN_CUT_SYMBOLS, $value);
+    }
+
+    private function getInputValue(string $value, string $code)
+    {
+        return base64_decode($value);
+    }
     /**********************/
     /****** symlink *******/
     /**********************/
@@ -190,7 +304,7 @@ class SessionHelper
      */
     private function path(): string
     {
-        return '..' . (!defined('SESSION_FILE_DIRPATH')
+        return (!defined('SESSION_FILE_DIRPATH')
                 ? $this->defaultPath
                 : SESSION_FILE_DIRPATH) . '/';
     }
@@ -208,6 +322,10 @@ class SessionHelper
      */
     private function open()
     {
+        if ($this->missing()) {
+            $this->reloadPage();
+            throw new SessionNotFoundException($this->getSymlink());
+        }
         return file_get_contents($this->getSymlink());
     }
 
@@ -253,4 +371,18 @@ class SessionHelper
         return json_decode($value, $arr);
     }
     /***********************/
+
+    /**
+     * @deprecated var $end
+     * @return string
+     */
+    private function getHeaderName(): string
+    {
+        $end = '';
+
+        $this->sessionHeaderName = empty($this->sessionHeaderName)
+            ? env("SESSION_HEADER_NAME")
+            : $this->sessionHeaderName;
+        return strtoupper($this->sessionHeaderName . $end);
+    }
 }

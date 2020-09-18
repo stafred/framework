@@ -128,4 +128,14 @@ final class Arr
         $missing = array_diff_key($keys, $values);
         return array_flip($missing);
     }
+
+    /**
+     * @param array $value
+     * @param array $array
+     * @return array
+     */
+    public static function cutValue(array $value, array $array)
+    {
+        return array_diff($array, $value);
+    }
 }

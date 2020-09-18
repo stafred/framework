@@ -4,6 +4,7 @@
 namespace Stafred\Exception;
 
 use Exception;
+use Stafred\Utils\Header;
 
 /**
  * Class CookieMissingParameterException
@@ -17,6 +18,10 @@ final class CookieMissingParameterException extends Exception
      */
     public function __construct(array $parameter = [])
     {
+        $header = Header::make();
+        $header->setStatus(500);
+        $header->setStatusText('Error cookie');
+
         $message =
             'Invalid parameter for creating a cookie (' . implode(", ", $parameter) . ').';
         $code = 500;

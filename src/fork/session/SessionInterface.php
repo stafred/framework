@@ -12,5 +12,5 @@ interface SessionInterface
 
     public static function get(string $key);
 
-    public static function put(string $key, array $value);
+    public static function set(string $key, $value);
 }

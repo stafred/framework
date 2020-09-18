@@ -3,6 +3,8 @@
 namespace Stafred\Cookie;
 
 use Stafred\Cache\CacheManager;
+use Stafred\Security\Encrypt;
+use Stafred\Utils\Session;
 
 /**
  * Class CookieHelper
@@ -78,9 +80,9 @@ class CookieHelper
     /**
      * @return bool
      */
-    final public function isset(): bool
+    final public function missing(): bool
     {
-        return isset($_COOKIE[$this->getName()]);
+        return !isset($_COOKIE[$this->getName()]);
     }
 
     /**
@@ -106,6 +108,38 @@ class CookieHelper
     final public function isHttpOnly(): bool
     {
         return env("COOKIE_SET_HTTPONLY");
+    }
+
+    /**
+     * @param string $name
+     */
+    final public function remove(string $name = NULL)
+    {
+        $name = empty($name) ? env('session.header.name') : $name;
+        $this->set()->all([
+            'name' => env('SESSION_HEADER_NAME'),
+            'value' => NULL,
+            'expires' => env("COOKIE_SET_EXPIRES"),
+            'path' => env("COOKIE_SET_PATH"),
+            'domain' => env("COOKIE_SET_DOMAIN"),
+            'secure' => Session::get('_https'),
+            'httponly' => env("COOKIE_SET_HTTPONLY"),
+            'samesite' => env("COOKIE_SET_SAMESITE")
+        ])->make();
+    }
+
+    /**
+     * @param bool $secure
+     * @param string $code
+     * @return string
+     */
+    final public function encodeSecure(bool $secure, string $code)
+    {
+        return base64_encode(
+            Encrypt::xor(
+                ($secure ? 'true' : 'false') . '|'
+                . $code . env('app.secret.key'))
+        );
     }
 
     /**

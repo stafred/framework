@@ -4,6 +4,7 @@
 namespace Stafred\Exception;
 
 use Exception;
+use Stafred\Utils\Header;
 
 
 final class CookieCreateErrorException extends Exception
@@ -13,6 +14,10 @@ final class CookieCreateErrorException extends Exception
      */
     public function __construct()
     {
+        $header = Header::make();
+        $header->setStatus(500);
+        $header->setStatusText('Error cookie');
+
         $message =
             'The cookie was not created.';
         $code = 500;
