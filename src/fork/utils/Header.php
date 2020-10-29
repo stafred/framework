@@ -2,6 +2,7 @@
 
 namespace Stafred\Utils;
 
+use Stafred\Cache\Buffer;
 use Stafred\Header\HeaderHelper;
 
 /**
@@ -37,7 +38,9 @@ final class Header extends HeaderHelper
 
     public function redirectIndex()
     {
-        header("LOCATION: /");
+        var_dump($_SERVER);
+        dd(Buffer::input()->getAll()->session());
+        //header("LOCATION: /");
         exit;
     }
 }

@@ -36,10 +36,8 @@ final class CookieBuilder extends CookieHelper
         $cookie = Arr::receive(
             ['_name', '_code', '_security', /*'_ckscr'*/], $this->getSession()
         );
-        $cookieSecure = Session::get('_https');
 
-        /*@deprecated*/
-        /*$cookie['_ckscr'] = $this->encodeSecure($cookieSecure, $cookie['_code']);*/
+        $cookieSecure = Session::get('_https');
 
         parent::__construct();
 

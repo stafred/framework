@@ -5,13 +5,13 @@ namespace Stafred\Routing;
 use Stafred\Kernel\TimeService;
 
 /**
- * Class RoutingBuilder
+ * Class RouteObserver
  * @package Stafred\Routing
  */
-class RoutingBuilder extends RoutingHelper
+final class RouteObserver
 {
     /**
-     * RoutingBuilder constructor.
+     * RouteObserver constructor.
      */
     public function __construct()
     {

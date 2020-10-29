@@ -16,18 +16,22 @@ class ClassList
      * ---------------------------------------
      * Classes Builders
      */
-    const MASTER = [
-        \Stafred\Header\CorsBuilder::class,
+    const KERNEL = [
         \Stafred\Session\SessionBuilder::class,
-        \Stafred\Security\SecurityBuilder::class,
         \Stafred\Cookie\CookieBuilder::class,
-        \Stafred\Database\ConnectionBuilder::class,
-        \Stafred\Routing\RoutingBuilder::class,
+        \Stafred\Header\RequestBuilder::class,
+        \Stafred\Header\CorsBuilder::class,
+        \Stafred\Security\SecurityBuilder::class,
         \Stafred\Header\HeaderBuilder::class,
+        \Stafred\Database\ConnectionBuilder::class,
+    ];
+
+    const MASTER = [
+        \Stafred\Controller\ControllerWrapper::class,
     ];
 
     const SLAVE = [
-        \Stafred\Session\SessionWrapper::class
+        \Stafred\Session\SessionWrapper::class,
     ];
 
     const ADDON = [

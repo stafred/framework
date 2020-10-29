@@ -58,3 +58,10 @@ if (!function_exists('session')) {
         return new \Stafred\Session\SessionHelper();
     }
 }
+
+if (!function_exists('view')) {
+    function view(string $name)
+    {
+        return \Stafred\View\ViewWrapper::make($name);
+    }
+}

@@ -51,6 +51,5 @@ class SecurityHelper
         if(Http::isAjax()) return;
         $time = env('SESSION_FILE_LIFETIME');
         $dir  = env('SESSION_FILE_DIRPATH');
-        //debug(Arr::cutValue(['.','..','.keep'],scandir($dir)));
     }
 }

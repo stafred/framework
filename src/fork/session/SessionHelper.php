@@ -2,7 +2,8 @@
 
 namespace Stafred\Session;
 
-use Stafred\Cache\CacheManager;
+use Stafred\Cache\Buffer;
+use Stafred\Cache\CacheStorage;
 use Stafred\Cookie\CookieHelper;
 use Stafred\Exception\SessionErrorException;
 use Stafred\Exception\SessionNotFoundException;
@@ -41,9 +42,10 @@ class SessionHelper
         "_name"     => NULL,
         "_code"     => NULL,
         "_security" => NULL,
-        "_https"    => NULL,
+        //"_https"    => NULL,
         "_csrf"     => NULL,
-        "_ip"       => NULL
+        "_ip"       => NULL,
+        "_udps"     => NULL,
     ];
 
     /***
@@ -93,7 +95,6 @@ class SessionHelper
     protected function read(): string
     {
         $cookie = $this->cookie();
-
         $_name = $cookie->key('_name')->getValue();
         $_security = $cookie->key('_security')->getValue();
         $this->code = $cookie->key('_code')->getValue();
@@ -120,7 +121,7 @@ class SessionHelper
      */
     protected function getSymlink(): string
     {
-        return CacheManager::getSharedSessionStorage('symlink');
+        return Buffer::input()->session('symlink');
     }
 
     /**
@@ -128,7 +129,7 @@ class SessionHelper
      */
     protected function putAllCache(array $value): void
     {
-        CacheManager::putAllSessionStorage($value);
+        Buffer::output()->putAll()->session($value);
         $this->defaultSession = NULL;
     }
 
@@ -176,7 +177,6 @@ class SessionHelper
      */
     protected function reloadPage()
     {
-        /*env('SESSION_SECURITY_RELOAD')*/
         if (Http::isAjax()) {
             throw new SessionErrorException();
         }
@@ -234,7 +234,7 @@ class SessionHelper
                 $this->getName(),
                 $this->getOutputSecurity()
             );
-        CacheManager::setSharedSessionStorage('symlink', $symlink);
+        $this->defaultSession["symlink"] = $symlink;
     }
 
     private function setOutputProtocol()
@@ -265,7 +265,7 @@ class SessionHelper
         $symlink = $this->path() . $this->prefix() . '_' .
             $this->file($name, $security);
 
-        CacheManager::setSharedSessionStorage('symlink', $symlink);
+        Buffer::output()->session('symlink', $symlink);
         return $symlink;
     }
 

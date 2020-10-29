@@ -20,12 +20,17 @@ interface IHttp
 
     public static function getServerName(): string;
 
+    public static function getServerIp(): string;
+
     public static function getDocRoot(): string;
 
-    public static function getQueryString(): string;
+    public static function getQueryString(): ?string;
 
     public static function getReferer(): string;
 
     public static function getRequestMethod(): string;
 
+    public static function getScheme(): string;
+
+    public static function getMethod(): string;
 }

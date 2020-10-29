@@ -2,9 +2,8 @@
 
 namespace Stafred\Database;
 
-use Stafred\Cache\CacheManager;
 use Stafred\Kernel\TimeService;
-use Stafred\Utils\DB;
+use Stafred\Cache\Buffer;
 
 /**
  * Class ConnectionBuilder
@@ -33,7 +32,7 @@ class ConnectionBuilder extends ConnectionHelper
     /**
      * @return \PDO
      */
-    private function PDO()
+    protected function PDO(): \PDO
     {
         return new \PDO(
             $this->dns(),
@@ -45,23 +44,20 @@ class ConnectionBuilder extends ConnectionHelper
     /**
      * @param \PDO $pdo
      */
-    private function sharedStorage(\PDO $pdo)
+    protected function sharedStorage(\PDO $pdo)
     {
-        CacheManager::setSharedStorageDB($this->getKey(), $pdo);
+        Buffer::output()->db($this->getKey(), $pdo);
     }
 
     /**
      * @return bool
      */
-    private function isShared()
+    protected function isShared(): bool
     {
-        return CacheManager::existsKeyStorageDB($this->getKey());
+        return Buffer::input()->isKey('db', $this->getKey());
     }
 
-    /**
-     * connect primary DB
-     */
-    final public function connect()
+    public function connect()
     {
         if (!$this->isNameEmpty() || $this->isShared()) {
             $this->sharedStorage(
@@ -75,7 +71,7 @@ class ConnectionBuilder extends ConnectionHelper
      */
     public function __destruct()
     {
-        if(DATABASE_PRELOAD) {
+        if(env("database.preload")) {
             $this->connect();
         }
 

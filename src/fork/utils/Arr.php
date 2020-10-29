@@ -138,4 +138,20 @@ final class Arr
     {
         return array_diff($array, $value);
     }
+
+    /**
+     * @param array $value
+     * @return array
+     */
+    public static function removeEmpty(array $value){
+        return array_filter($value);
+    }
+
+    /**
+     * @param array $unique
+     */
+    public static function unique(array $value)
+    {
+        return array_unique($value);
+    }
 }

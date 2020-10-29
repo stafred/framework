@@ -2,13 +2,16 @@
 
 namespace Stafred\Database\Mysql;
 
+use Stafred\Async\Client\WrapObject;
+use Stafred\Cache\Buffer;
 use Stafred\Cache\CacheManager;
+use Stafred\Utils\Hash;
 
 /**
  * Class QueryService
  * @package Stafred\Database\Mysql
  */
-class QueryService
+class QueryService extends WrapObject
 {
     /**
      * @var string
@@ -39,7 +42,6 @@ class QueryService
      */
     protected $security = true;
 
-
     /*public - start*/
 
     /**
@@ -67,8 +69,8 @@ class QueryService
     {
         if ($this->isMissingDB()) {(
             new \Stafred\Database\ConnectionBuilder()
-		)
-			->connect();
+        )
+            ->connect();
         }
 
         if ($get_id === true) {
@@ -85,6 +87,14 @@ class QueryService
     }
 
     /**
+     * @return string
+     */
+    final public function hash()
+    {
+        return md5($this->toString() . json_encode($this->getProperties()));
+    }
+
+    /**
      * @return int
      */
     final public function getID(): int
@@ -92,6 +102,22 @@ class QueryService
         if ($this->isInsert()) $this->executeLastId();
         return $this->lastID;
     }
+
+    /**
+     * @param $token
+     * @return array
+     */
+    public function async($token): array
+    {
+        return $this->fields(
+            ''.$token, 'async', 'mysql', ''.$this->operation,
+            [
+                "query"=>$this->toString(),
+                "property"=>$this->getProperties()
+            ]
+        );
+    }
+
 
     /*public - finish*/
 
@@ -196,7 +222,8 @@ class QueryService
      */
     private function getPDO(): \PDO
     {
-        return CacheManager::getSharedStorageDB($this->getKeyPDO());
+        return Buffer::input()->db($this->getKeyPDO());
+        //return CacheManager::getSharedStorageDB($this->getKeyPDO());
     }
 
     /**
@@ -304,6 +331,7 @@ class QueryService
      */
     private function isMissingDB()
     {
-        return empty(DATABASE_PRELOAD) && !CacheManager::existsKeyStorageDB($this->getKeyPDO());
+        return empty(DATABASE_PRELOAD);
+        //return empty(DATABASE_PRELOAD) && !CacheManager::existsKeyStorageDB($this->getKeyPDO());
     }
 }

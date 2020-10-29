@@ -2,6 +2,7 @@
 
 namespace Stafred\Cookie;
 
+use Stafred\Cache\Buffer;
 use Stafred\Cache\CacheManager;
 use Stafred\Security\Encrypt;
 use Stafred\Utils\Session;
@@ -99,7 +100,7 @@ class CookieHelper
      */
     final public function encode(array $value)
     {
-        return base64_encode(json_encode($value));
+        return base64_encode(gzdeflate(json_encode($value)));
     }
 
     /**
@@ -138,7 +139,8 @@ class CookieHelper
         return base64_encode(
             Encrypt::xor(
                 ($secure ? 'true' : 'false') . '|'
-                . $code . env('app.secret.key'))
+                . $code . env('app.secret.key')
+            )
         );
     }
 
@@ -147,7 +149,7 @@ class CookieHelper
      */
     protected function getSession()
     {
-        return CacheManager::getAllSessionStorage();
+        return Buffer::input()->getAll()->session();
     }
 
     /**

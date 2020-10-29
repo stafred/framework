@@ -2,10 +2,10 @@
 
 namespace Stafred\Cookie;
 
-use Stafred\Exception\CookieCreateErrorException;
-use Stafred\Exception\CookieMissingParameterException;
 use Stafred\Utils\Arr;
 use Stafred\Utils\Session;
+use Stafred\Exception\Cookie\CookieMissingParameterException;
+use Stafred\Exception\Cookie\CookieCreateErrorException;
 
 /**
  * Class CookieSetDecorator

@@ -1,48 +1,53 @@
 <?php
-
 namespace Stafred\Database;
+
 /**
  * Class ConnectionHelper
  * @package Stafred\Database
  */
-class ConnectionHelper
+abstract class ConnectionHelper
 {
+    abstract protected function PDO(): \PDO;
+    abstract protected function sharedStorage(\PDO $pdo);
+    abstract protected function isShared(): bool;
+    abstract public function connect();
+
     /**
      * @var null|String
      */
-    private $driver;
+    protected $driver;
     /**
      * @var null|String
      */
-    private $host;
+    protected $host;
     /**
      * @var int
      */
-    private $port;
+    protected $port;
     /**
      * @var null|String
      */
-    private $user;
+    protected $user;
     /**
      * @var null|String
      */
-    private $password;
+    protected $password;
     /**
      * @var null|String
      */
-    private $name;
+    protected $name;
     /**
      * @var null|String
      */
-    private $charset;
+    protected $charset;
     /**
      * @var null|\PDO
      */
-    private $pdo;
+    protected $pdo;
     /**
      * @var null|String
      */
-    private $key;
+    protected $key;
 
     /**
      * @param String|null $driver

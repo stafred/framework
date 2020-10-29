@@ -1,9 +1,8 @@
 <?php
 
-
 namespace Stafred\Kernel;
 
-use Stafred\Cache\CacheManager;
+use Stafred\Cache\Buffer;
 
 /**
  * Class TimeService
@@ -21,7 +20,7 @@ final class TimeService
      */
     public static function start(string $class): void
     {
-        CacheManager::setCacheTimeStart($class);
+        Buffer::output()->timing($class);
     }
 
     /**
@@ -29,11 +28,6 @@ final class TimeService
      */
     public static function finish(string $class): void
     {
-        CacheManager::setCacheTimeFinish($class);
-    }
-
-    public static function get()
-    {
-        debug(CacheManager::getCacheTimeService());
+        Buffer::output()->timing($class, false);
     }
 }

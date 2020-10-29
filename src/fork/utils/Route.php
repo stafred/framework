@@ -2,10 +2,13 @@
 
 namespace Stafred\Utils;
 
-final class Route
-{
-    public static function get()
-    {
+use Stafred\Routing\RouteRegistry;
 
-    }
+/**
+ * Class Route
+ * @package Stafred\Utils
+ */
+final class Route extends RouteRegistry
+{
+
 }

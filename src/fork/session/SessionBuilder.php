@@ -32,15 +32,15 @@ final class SessionBuilder extends SessionHelper
 
         if($this->missing()) {
             $cookie->remove();
-            $this->reloadPage();
+            $this->create();
             return;
         }
 
         $this->get();
 
         if($this->failed()) {
-            $this->remove();
-            $this->reloadPage();
+            $cookie->remove();
+            $this->create();
             return;
         }
         else {

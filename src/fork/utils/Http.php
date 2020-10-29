@@ -2,6 +2,7 @@
 
 namespace Stafred\Utils;
 
+use Stafred\Header\HeaderHelper;
 use Stafred\Http\HttpObserver;
 use Stafred\Http\IHttp;
 
@@ -9,31 +10,16 @@ use Stafred\Http\IHttp;
  * Class Http
  * @package Stafred\Utils
  */
-final class Http implements IHttp
+final class Http extends HeaderHelper implements IHttp
 {
-    /**
-     * @var \Stafred\Http\HttpObserver|null
-     */
-    private static $instance = NULL;
-
-    /**
-     * Http constructor.
-     */
-    public function __construct()
-    {
-        if(self::$instance !== NULL){
-            self::$instance = new HttpObserver();
-        }
-    }
-
     public static function getDocRoot(): string
     {
-        return '';
+        return $_SERVER["DOCUMENT_ROOT"];
     }
 
-    public static function getQueryString(): string
+    public static function getQueryString(): ?string
     {
-        return '';
+        return $_SERVER['QUERY_STRING'];
     }
 
     public static function getReferer(): string
@@ -49,6 +35,19 @@ final class Http implements IHttp
     public static function getServerName(): string
     {
         return '';
+    }
+
+    public static function getServerIp(): string
+    {
+        return $_SERVER['SERVER_ADDR'];
+    }
+
+    /**
+     * @return string
+     */
+    public static function getServerPort(): string
+    {
+        return $_SERVER['SERVER_PORT'];
     }
 
     public static function getUserAgent(): string
@@ -76,5 +75,15 @@ final class Http implements IHttp
     public static function isSecurity(): bool
     {
         return isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === 'on';
+    }
+
+    public static function getScheme(): string
+    {
+        return $_SERVER['REQUEST_SCHEME'];
+    }
+
+    public static function getMethod(): string
+    {
+        return $_SERVER['REQUEST_METHOD'];
     }
 }

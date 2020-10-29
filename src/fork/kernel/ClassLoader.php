@@ -2,7 +2,9 @@
 
 namespace Stafred\Kernel;
 
+use Stafred\Exception\LoaderClassAllreadyMountException;
 use Stafred\Utils\Arr;
+use Stafred\Utils\Cookie;
 
 /**
  * Class ClassLoader
@@ -11,17 +13,11 @@ use Stafred\Utils\Arr;
 final class ClassLoader extends ClassList
 {
     /**
-     * @var bool
-     */
-    private $declared = false;
-
-    /**
      * ClassLoader constructor.
      * @param bool $declared
      */
-    public function __construct(bool $declared = false)
+    public function __construct()
     {
-        $this->declared = $declared;
         $this->controller();
     }
 
@@ -30,7 +26,13 @@ final class ClassLoader extends ClassList
      */
     public function mount()
     {
-        $this->all(Arr::merge(self::MASTER,self::SLAVE,self::ADDON));
+        $this->all(Arr::merge(
+            self::KERNEL,
+            self::MASTER,
+            self::SLAVE,
+            self::ADDON
+        ));
+        $this->set();
     }
 
     /**
@@ -57,23 +59,14 @@ final class ClassLoader extends ClassList
      */
     private function controller()
     {
-        if(LoaderHelper::isPrimary()) {
-            throw new \Exception("Restart of the primary autoloader of classes is prohibited.");
-        }
-
-        if(LoaderHelper::isSlave()) {
-            throw new \Exception("Restart of the slave autoloader of classes is prohibited.");
-        }
-
-        if(LoaderHelper::isSlave()) {
-            throw new \Exception("Restart of the others autoloader of classes is prohibited.");
+        if(LoaderSingleton::isMount()) {
+            throw new LoaderClassAllreadyMountException();
+            exit;
         }
     }
 
     private function set()
     {
-        LoaderHelper::setPrimary();
-        LoaderHelper::setSlave();
-        LoaderHelper::setOthers();
+        LoaderSingleton::setMount();
     }
 }

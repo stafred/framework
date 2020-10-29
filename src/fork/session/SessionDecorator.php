@@ -2,6 +2,7 @@
 
 namespace Stafred\Session;
 
+use Stafred\Cache\Buffer;
 use Stafred\Cache\CacheManager;
 
 /**
@@ -16,17 +17,21 @@ class SessionDecorator
      */
     public function getAll(bool $arr)
     {
-        $session = CacheManager::getAllSessionStorage();
+        $session = Buffer::input()->getAll()->session();
         return $arr ? (array) $session : (object) $session;
     }
 
     /**
      * @param string $key
-     * @return mixed
+     * @return false|mixed
      */
     public function getValue(string $key)
     {
-        return $this->getAll(true)[$key];
+        $all = $this->getAll(true);
+        if(array_key_exists($key,$all)){
+            return $all[$key];
+        }
+        return false;
     }
 
     /**
@@ -35,6 +40,6 @@ class SessionDecorator
      */
     public function setValue(string $key, $value)
     {
-        CacheManager::setSharedSessionStorage($key,$value);
+        Buffer::output()->session($key,$value);
     }
 }
