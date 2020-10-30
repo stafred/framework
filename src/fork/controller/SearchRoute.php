@@ -32,9 +32,11 @@ final class SearchRoute
      */
     public function __construct(string $link, array $request, array $routes)
     {
+        /*собираем все необходимые данные для проверки марштура*/
         $this->link = $link;
         $this->routes = $routes;
         $this->request = $request;
+
         $this->start();
     }
 
@@ -51,7 +53,7 @@ final class SearchRoute
     }
 
     /**
-     *
+     * отбираем маршруты по методам запроса
      */
     private function methodSelection()
     {
@@ -63,6 +65,9 @@ final class SearchRoute
         }
     }
 
+    /**
+     * ищем соответствия по ссылкам
+     */
     private function linkSelection()
     {
         foreach ($this->routes as $key => $value) {
@@ -74,6 +79,10 @@ final class SearchRoute
         }
     }
 
+    /**
+     * @warning проверить ошибку при мажорной селекции
+     * @throws RoutingNotFoundException
+     */
     private function majorSelection()
     {
         $result = [];
@@ -81,6 +90,7 @@ final class SearchRoute
 
         foreach ($this->routes as $key => $value) {
             if (strtolower($value["uri"]) === strtolower($this->link)) {
+
                 $result[] = array_merge($this->routes[$key], ['args' => ['name' => [], 'value' => []]]);
                 break;
             }

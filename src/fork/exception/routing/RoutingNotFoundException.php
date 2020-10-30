@@ -36,7 +36,7 @@ final class RoutingNotFoundException
      */
     public function debug($pointer = NULL): string
     {
-        return "Route or url not found.";
+        return "Route or URL not found. Check the route and method of the request.";
     }
 
     /**

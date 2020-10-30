@@ -1,13 +1,3 @@
-<?php
-
-namespace Stafred\Async\Client;
-
-/**
- * Class MetaFrameClient
- * @package Stafred\Async
- */
-final class Connect
-{
     public $host;
     public $port;
     public $message = "";
@@ -39,6 +29,14 @@ final class Connect
 
     public function event(Message $message){
         $this->message = $this->toString($message->create()->get());
+    }
+
+    /**
+     * @param callable $fn
+     */
+    public function push(callable $fn)
+    {
+        $result = $fn();
     }
 
     /**
@@ -117,4 +115,3 @@ final class Connect
     {
         fclose($this->ssc);
     }
-}

@@ -75,6 +75,7 @@ class HeaderHelper
         } catch (\Throwable $t) {}
     }
 
+    
     /**
      * @return string
      */

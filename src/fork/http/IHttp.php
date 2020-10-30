@@ -30,6 +30,8 @@ interface IHttp
 
     public static function getRequestMethod(): string;
 
+    public static function getRequestUri(): string;
+
     public static function getScheme(): string;
 
     public static function getMethod(): string;

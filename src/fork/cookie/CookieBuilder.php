@@ -22,8 +22,6 @@ final class CookieBuilder extends CookieHelper
      */
     public function __construct()
     {
-        TimeService::start(__CLASS__);
-
         $this->session();
         $this->security();
     }
@@ -56,10 +54,5 @@ final class CookieBuilder extends CookieHelper
     private function security()
     {
 
-    }
-
-    public function __destruct()
-    {
-        TimeService::finish(__CLASS__);
     }
 }

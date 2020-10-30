@@ -17,8 +17,6 @@ final class CorsBuilder extends HeaderHelper
      */
     public function __construct()
     {
-        TimeService::start(__CLASS__);
-
         if($this->getAccessCors()){
             $this->setAllowOrigin();
             $this->setAllowMethods();
@@ -110,10 +108,5 @@ final class CorsBuilder extends HeaderHelper
     private function getAccessCors(): bool
     {
         return !empty(constant('HEADERS_BROWSER_CORS'));
-    }
-
-    public function __destruct()
-    {
-        TimeService::finish(__CLASS__);
     }
 }

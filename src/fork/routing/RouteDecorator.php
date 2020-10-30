@@ -9,8 +9,25 @@ use Stafred\Utils\Hash;
  * Class RouteDecorator
  * @package Stafred\Routing
  */
-class RouteDecorator
+abstract class RouteDecorator
 {
+    /**
+     * @param String $url
+     * @param String $controller_method
+     */
+    abstract public static function get(String $url, String $controller_method): void;
+
+    /**
+     * @param String $url
+     * @param String $controller_method
+     */
+    abstract public static function post(String $url, String $controller_method): void;
+
+    /**
+     * @param array $route
+     */
+    abstract public static function group(array $route): void;
+
     /**
      * @param String $method
      * @param String $uri

@@ -17,6 +17,8 @@ final class ControllerMapper
     private $buffer = [];
     private $request = [];
     private $routes = [];
+    private $blank = '';
+    private $namespace = '';
     private $controller = '';
     private $method = '';
 
@@ -68,9 +70,10 @@ final class ControllerMapper
     {
         preg_match(
             "/^(?<controller>[_a-z][_a-z0-9]*)(::|@|->)/i",
-            $this->route['controller_method'], $matcher
+            $this->getBlank(), $matcher
         );
         $controller = $matcher["controller"] ?? NULL;
+
         if(empty($controller)){
             throw new RoutingInvalidControllerNameException();
         }
@@ -106,6 +109,35 @@ final class ControllerMapper
         );
     }
 
+    /**
+     * @return string
+     */
+    public function getBlank(): string
+    {
+        if(!empty($this->blank)) return $this->blank;
+        $blank = explode("\\", $this->route['controller_method']);
+        $this->blank = $blank[count($blank)-1];
+        return $this->blank;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNamespace(): string
+    {
+        if(!empty($this->namespace)) return $this->namespace;
+        $namespace = preg_replace(
+            "/^(.*)(\\\[^\\\]+)$/i", "$1\\",
+            $this->route['controller_method']
+        );
+        $this->namespace = $this->route['controller_method'] === $namespace ? "" : $namespace;
+        return $this->namespace;
+    }
+
+    /**
+     * разделяем ссылку на ресурсы/параметры поиска маршрута
+     * /1/2/3 = 1,2,3
+     */
     private function setRequestResource()
     {
         $resource = explode("/", $this->request['urn']);

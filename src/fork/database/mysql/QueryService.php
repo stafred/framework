@@ -162,7 +162,7 @@ class QueryService extends WrapObject
      */
     private function toQueryStringPrimary(array $query): string
     {
-        return implode("; ", $query);
+        return implode("; ", $query) . ";";
     }
 
     /**
@@ -220,7 +220,7 @@ class QueryService extends WrapObject
     /**
      * @return \PDO
      */
-    private function getPDO(): \PDO
+    protected function getPDO(): \PDO
     {
         return Buffer::input()->db($this->getKeyPDO());
         //return CacheManager::getSharedStorageDB($this->getKeyPDO());
@@ -234,6 +234,7 @@ class QueryService extends WrapObject
         $this->securityParams(DATABASE_SECURITY && $this->security);
         $this->statment = $this->getPDO()->prepare($this->query);
         $this->statment->execute($this->properties);
+        
     }
 
     /**
@@ -286,6 +287,7 @@ class QueryService extends WrapObject
 
     /**
      * patterns for calc parameters
+     * /i ????
      * @param string $query
      * @return int
      */
@@ -297,8 +299,12 @@ class QueryService extends WrapObject
             '[\'\"]\s*' . $operators . '\s*', /*pattern string left*/
             '\s*' . $operators . '\s*[\d]+', /*pattern number right*/
             '[\d]+\s*' . $operators . '\s*', /*pattern number left*/
+            /*pattern for checking the existence of column names*/
+            //'[a-z\d_]+\.[a-z\d_]+\s*' . $operators . '\s*[a-z\d_]+\.[a-z\d_]+'
+
         ]);
-        preg_match_all("/$pattern/", $query, $matcher);
+        preg_match_all("/$pattern/i", $query, $matcher);
+        //var_dump($query);
         return count($matcher[0]);
     }
 
@@ -315,14 +321,14 @@ class QueryService extends WrapObject
 
     /**
      * @param bool $security
-     * @throws \Stafred\Exception\SQLSecurityParametersException
+     * @throws SQLSecurityParametersException
      */
     private function securityParams($security = true)
     {
         if ($security === false) return;
         $countTotal = $this->getCountParams($this->toString());
         if ($countTotal > 0) {
-            throw new \Stafred\Exception\SQLSecurityParametersException();
+            throw new \Stafred\Exception\SQL\SQLSecurityParametersException();
         }
     }
 

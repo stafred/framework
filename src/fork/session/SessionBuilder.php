@@ -19,8 +19,6 @@ final class SessionBuilder extends SessionHelper
      */
     public function __construct()
     {
-        TimeService::start(__CLASS__);
-
         $cookie = $this->cookie();
 
         if($cookie->missing()) {
@@ -46,10 +44,5 @@ final class SessionBuilder extends SessionHelper
         else {
             $this->recreate();
         }
-    }
-
-    public function __destruct()
-    {
-        TimeService::finish(__CLASS__);
     }
 }

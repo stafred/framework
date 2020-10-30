@@ -42,7 +42,7 @@ class SecurityHelper
         $https = env("SESSION_HTTPS_ENABLE");
 
         if ($https === true && $secure === false) {
-            throw new \Stafred\Exception\SessionProtocolErrorException();
+            throw new \Stafred\Exception\Session\SessionProtocolErrorException();
         }
     }
 

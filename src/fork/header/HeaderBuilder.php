@@ -23,17 +23,10 @@ final class HeaderBuilder extends HeaderHelper
      */
     public function __construct(string $contentType = NULL, bool $change = false)
     {
-        TimeService::start(__CLASS__);
-
         $this->contentType = $contentType;
         if (!$change) {
             $this->makeContentType();
         }
         $this->setPowerBy();
-    }
-
-    public function __destruct()
-    {
-        TimeService::finish(__CLASS__);
     }
 }

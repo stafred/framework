@@ -37,4 +37,10 @@ class ClassList
     const ADDON = [
 
     ];
+
+    const ASYNC = [
+        \Stafred\Header\RequestBuilder::class,
+        \Stafred\Database\ConnectionBuilder::class,
+        \Stafred\Controller\ControllerWrapper::class,
+    ];
 }

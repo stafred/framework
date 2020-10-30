@@ -42,10 +42,11 @@ class SessionHelper
         "_name"     => NULL,
         "_code"     => NULL,
         "_security" => NULL,
-        //"_https"    => NULL,
+        "_https"    => NULL,
         "_csrf"     => NULL,
         "_ip"       => NULL,
         "_udps"     => NULL,
+        "symlink"   => NULL,
     ];
 
     /***
@@ -384,5 +385,13 @@ class SessionHelper
             ? env("SESSION_HEADER_NAME")
             : $this->sessionHeaderName;
         return strtoupper($this->sessionHeaderName . $end);
+    }
+
+    /**
+     * @return array
+     */
+    final public function getDefaultSession(): array
+    {
+        return $this->defaultSession;
     }
 }

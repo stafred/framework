@@ -12,10 +12,10 @@ final class LoaderBuilder
     /**
      * Loader constructor.
      */
-    public function __construct()
+    public function __construct(bool $async = false)
     {
         TimeService::start(__CLASS__);
-        (new ClassLoader())->mount();
+        (new ClassLoader())->mount($async);
     }
 
     public function __destruct()

@@ -1,6 +1,7 @@
 <?php
 namespace Stafred\Command;
 
+use Stafred\Utils\Str;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Class CreateController
  * @package Status\Command
  */
-class CreateController extends Command
+final class CreateController extends Command
 {
     /**
      * @var string
@@ -46,7 +47,7 @@ class CreateController extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return int|void|null
+     * @return int|void
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -79,7 +80,7 @@ class CreateController extends Command
      */
     private function setController(string $controller)
     {
-        $this->controller = str_replace('\\','/', $controller);
+        $this->controller = Str::reverseSlash($controller);
     }
 
     /**
@@ -112,13 +113,14 @@ class CreateController extends Command
                 continue;
             }
 
-            @mkdir($path, 0777);
+            @mkdir(Str::lower($path), 0777);
         }
 
         $this->setClass($dir[$i]);
     }
+
     /**
-     * @param string $class
+     * @param string $dir
      */
     private function setNamespace(string $dir)
     {

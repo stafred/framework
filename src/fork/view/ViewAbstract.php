@@ -6,12 +6,13 @@ use Stafred\Utils\Arr;
 use Stafred\Utils\Hash;
 
 /**
- * Class ViewStreamAbstract
+ * Class ViewAbstract
  * @package Stafred\View
  */
 abstract class ViewAbstract
 {
     abstract function echo();
+
     abstract function return();
 
     /**
@@ -34,10 +35,10 @@ abstract class ViewAbstract
 
     /**
      * @param array $args
-     * @return ViewWrapper|ViewAbstract
+     * @return ViewWrapper
      * @throws \Exception
      */
-    public function params(array $args)
+    public function params(array $args): ViewWrapper
     {
         self::check();
         if (count(self::$params) !== 0) {
@@ -48,13 +49,13 @@ abstract class ViewAbstract
     }
 
     /**
-     * @param int|NULL $code
-     * @param String $text
+     * @param int|null $code
+     * @param string $text
      * @param bool $replace
-     * @return View|null
+     * @return ViewWrapper
      * @throws \Exception
      */
-    public function setHeader(int $code = NULL, string $text = '', bool $replace = true)
+    public function setHeader(int $code = NULL, string $text = '', bool $replace = true): ViewWrapper
     {
         self::check();
         //header('HTTP/1.1 ' . $code . ' ' . $text, $replace, $code);
@@ -82,7 +83,7 @@ abstract class ViewAbstract
     public function setHeaderText(string $title, string $value): ViewWrapper
     {
         if (strlen($title) < 1) {
-            throw new \Exception('text header is not set'/*, 500*/);
+            throw new \Exception('text header is not set', 500);
         }
 
         header("$title: $value");
@@ -96,7 +97,7 @@ abstract class ViewAbstract
     protected static function check(): void
     {
         if (is_null(self::$inst)) {
-            throw new \Exception('required object not found'/*, 500*/);
+            throw new \Exception('required object not found', 500);
         }
     }
 
@@ -134,7 +135,7 @@ abstract class ViewAbstract
         $text = self::replacementVars($text);
         $text = self::replacementFuncs($text);
         $text = self::replacementExpr($text);
-        return  $text;
+        return $text;
         //return base64_encode(gzdeflate($text, 9));
     }
 
@@ -178,6 +179,11 @@ abstract class ViewAbstract
         return $text;
     }
 
+    /**
+     * @param string $text
+     * @return string|string[]|null
+     * @throws \Exception
+     */
     private static function replacementVars(string $text)
     {
         foreach (self::$params as $k => $v) {
@@ -196,8 +202,9 @@ abstract class ViewAbstract
     }
 
     /**
-     * @param String $text
-     * @return String|string[]|null
+     * @param string $text
+     * @return string|string[]|null
+     * @throws \ReflectionException
      */
     protected static function replacementFuncs(string $text)
     {
@@ -209,36 +216,38 @@ abstract class ViewAbstract
         $salt = Hash::random('crc32');
         $newStringFuncs = implode('`' . $salt . '`', Arr::removeEmpty(Arr::merge($matchesFuncs)));
         preg_match_all(
-            '/_*[a-z][a-z\d]*\s*\(\s*[\$a-z\d_ \,\'\"]*\s*\)/is',
+            '/[_a-z]+[_a-z]*\s*\(\s*[\$a-z\d_ \,\'\"]*\s*\)/ius',
             $newStringFuncs . '',
             $matchesFuncs
         );
+
         $matchesFuncs = Arr::unique($matchesFuncs[0]);
+
         foreach ($matchesFuncs as $funcTemp) {
             $func = strstr($funcTemp, "(", true);
             $funcRefl = new \ReflectionFunction($func);
             $funcArgs = [];
             $parameters = $funcRefl->getParameters();
-            $countParameters = count($parameters);
+            //$countParameters = count($parameters);
+
+
 
             foreach ($parameters as $args) {
+                if(!array_key_exists($args->name, self::$params)) continue;
                 $funcArgs[] = self::$params[$args->name];
             }
 
-            if ($funcArgs[0] === NULL) {
-                preg_match_all(
-                    "/\K(?:(\'|\")(?>\\|(?!\1).)*?\1|(?!,).)*/i",
-                    trim(preg_replace("/^\s*[a-z_][a-z\d_]+\s*/i", "", $funcTemp), '()'),
-                    $matchesFuncArgs
-                );
-                $matchesFuncArgs = Arr::removeEmpty($matchesFuncArgs[0]);
-            } else {
+            if(empty($funcArgs)) {
                 $text = preg_replace(
-                    '/{{\s*' . addcslashes($funcTemp, "\(\)\$\'\"\.\/") . '\s*;?\s*}}/i',
-                    $funcRefl->invokeArgs($funcArgs),
-                    $text
-                );
+                    "/\{\{\s*$func\s*\(\s*\)\s*\}\}/ius",
+                    $funcRefl->invoke(),
+                    $text);
             }
+            else {
+
+            }
+
+            /*здесь доработать аргументы*/
         }
         return $text;
     }

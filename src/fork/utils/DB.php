@@ -2,25 +2,34 @@
 
 namespace Stafred\Utils;
 
+use Stafred\Database\Mysql\QueryService;
 use Stafred\Database\Mysql\QueryWrapper;
 
 /**
  * Class DB
  * @package Stafred\Utils
  */
-final class DB
+final class DB extends QueryService
 {
     /**
+     * <pre style="color:#ff9900">
+     * DB::all([
+     * &nbsp;&nbsp;&nbsp;DB::{method_query}(...args)->toString(),
+     * &nbsp;&nbsp;&nbsp;...
+     * &nbsp;&nbsp;&nbsp;DB::{method_query}(...args)->toString(),
+     * ],[...parameters]): QueryWrapper
+     * </pre>
      * @param array $query
      * @param array|NULL $parameters
      * @return QueryWrapper
      */
-    public static function all(array $query, array $parameters = NULL)
+    public static function all(array $query, array $parameters = NULL): QueryWrapper
     {
         return new QueryWrapper($query, $parameters, NULL);
     }
 
     /**
+     * to combine query strings only
      * alternative method - all()
      * @param array $query
      * @param array|NULL $parameters
@@ -33,14 +42,15 @@ final class DB
 
     /**
      * @param string $string
-     * @param array|NULL $parameters
+     * @param array|null $parameters
+     * @param bool $security
      * @return QueryWrapper
      */
-    public static function query(string $string, array $parameters = NULL)
+    public static function query(string $string, array $parameters = NULL, bool $security = true)
     {
         return new QueryWrapper([
             'query' => $string,
-        ], $parameters, NULL);
+        ], $parameters, NULL, $security);
     }
 
     /**
@@ -98,7 +108,7 @@ final class DB
         string $table,
         array $column,
         string $where = NULL,
-        array $parameters,
+        array $parameters = NULL,
         bool $security = true
     )
     {
@@ -126,5 +136,25 @@ final class DB
             'table' => $table,
             'where' => $where,
         ], $parameters, 'delete', $security);
+    }
+
+    public function __construct()
+    {
+
+    }
+    /**
+     * @return DB
+     */
+    public static function stats()
+    {
+        return new self;
+    }
+
+    /**
+     * @return \PDO
+     */
+    public function pdo(): \PDO
+    {
+        return $this->getPDO();
     }
 }

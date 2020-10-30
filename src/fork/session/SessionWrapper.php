@@ -18,8 +18,6 @@ final class SessionWrapper extends SessionHelper
      */
     public function __construct()
     {
-        TimeService::start(__CLASS__);
-
         $this->toPack();
     }
 
@@ -30,10 +28,5 @@ final class SessionWrapper extends SessionHelper
         if(count($cache) > 1) {
             $this->write($cache);
         }
-    }
-
-    public function __destruct()
-    {
-        TimeService::finish(__CLASS__);
     }
 }

@@ -16,12 +16,8 @@ class SecurityBuilder extends SecurityHelper
      */
     public function __construct()
     {
-        TimeService::start(__CLASS__);
-
         parent::__construct();
         $this->run();
-
-        TimeService::finish(__CLASS__);
     }
 
     private function run()
@@ -30,5 +26,4 @@ class SecurityBuilder extends SecurityHelper
             $this->{$method}();
         }
     }
-
 }

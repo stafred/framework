@@ -2,6 +2,10 @@
 
 namespace Stafred\Async\Client;
 
+/**
+ * Class WrapObject
+ * @package Stafred\Async\Client
+ */
 abstract class WrapObject
 {
     /**

@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Class DeleteController
  * @package Status\Command
  */
-class DeleteController extends Command
+final class DeleteController extends Command
 {
     /**
      * @var string

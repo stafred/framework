@@ -41,7 +41,7 @@ final class Pack
     public function wrap($event, $action, $method, $message): Pack
     {
         $this->result[] = [
-            "token" => $this->token,
+            //"token" => $this->token,
             "event" => $event,
             "action" => $action . "::" . $method,
             "message" => $message,

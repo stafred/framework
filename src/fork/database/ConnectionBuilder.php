@@ -16,8 +16,6 @@ class ConnectionBuilder extends ConnectionHelper
      */
     public function __construct()
     {
-        TimeService::start(__CLASS__);
-
         $this->setAll(
             DATABASE_DRIVER,
             DATABASE_HOST,
@@ -74,7 +72,5 @@ class ConnectionBuilder extends ConnectionHelper
         if(env("database.preload")) {
             $this->connect();
         }
-
-        TimeService::finish(__CLASS__);
     }
 }

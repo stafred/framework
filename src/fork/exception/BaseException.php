@@ -4,6 +4,10 @@ namespace Stafred\Exception;
 
 use Stafred\Utils\Header;
 
+/**
+ * Class BaseException
+ * @package Stafred\Exception
+ */
 class BaseException extends \Exception
 {
     const ENUM_COOKIE      = 'COOKIE';
@@ -11,6 +15,8 @@ class BaseException extends \Exception
     const ENUM_SESSION     = 'SESSION';
     const ENUM_SQL         = 'SQL';
     const ENUM_LOADER      = 'LOADER';
+    const ENUM_MEMCACHE    = 'MEMCACHE';
+    const ENUM_LOG         = "LOG";
 
     /**
      * Bad Request
@@ -25,7 +31,10 @@ class BaseException extends \Exception
      */
     const CODE_500   = 500;
 
-    final public function run($pointer = NULL)
+    /**
+     * @param null $pointer
+     */
+    final public function run($pointer = NULL): void
     {
         $header = Header::make();
         $header->setStatus($this->code());

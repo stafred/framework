@@ -17,6 +17,10 @@ class ControllerPrototype
     /**
      * @var string
      */
+    private $namespace = '';
+    /**
+     * @var string
+     */
     private $controller = '';
     /**
      * @var string
@@ -34,7 +38,6 @@ class ControllerPrototype
      * @var string
      */
     private $dir = 'App\\Controllers\\';
-
     /**
      * Controller constructor.
      * @param String $controller
@@ -44,6 +47,7 @@ class ControllerPrototype
      */
     public function __construct(ControllerMapper $data)
     {
+        $this->namespace = $data->getNamespace();
         $this->controller = $data->getController();
         $this->method = $data->getMethod();
         $this->args = $data->getArgs();
@@ -55,17 +59,18 @@ class ControllerPrototype
      */
     public function start()
     {
+        $this->controller = $this->dir  . $this->namespace . $this->controller;
+
         $this->injectClass();
 
-        $controller = $this->dir . $this->controller;
-        $refClass = new \ReflectionClass($controller);
+        $refClass = new \ReflectionClass($this->controller);
 
         /*может проходит верхний регистр. это нужно отследить.*/
         if (empty($refClass)) {
             throw new \Exception('Сontroller not found'/*, 500*/);
         }
 
-        $refMethod = new \ReflectionMethod($controller, $this->method);
+        $refMethod = new \ReflectionMethod($this->controller, $this->method);
 
         if (!$refMethod->isPublic()) {
             throw new RoutingMethodNotPublicException();
@@ -81,10 +86,6 @@ class ControllerPrototype
         $refParams = new ReflectionParamsController($refArgs);
         $this->args = array_merge($this->args, $refParams->getParameters());
         $this->values = array_merge($this->values, $refParams->getParameters());
-
-//        if (count($refMethod->getParameters()) !== count($this->args)) {
-//            throw new \Exception('required arguments not found in method', 404);
-//        }
 
         $args = [];
         foreach ($refMethod->getParameters() as $refParam) {
@@ -121,9 +122,7 @@ class ControllerPrototype
             throw new RoutingControllerNoNameException();
         }
 
-        $controller = $this->dir . $this->controller;
-
-        preg_match_all("/[a-z_0-9]+/i", $controller, $match);
+        preg_match_all("/[a-z_0-9]+/i", $this->controller, $match);
 
         $str = '';
 
@@ -137,6 +136,8 @@ class ControllerPrototype
         }
 
         $file = str_replace("\\", "/", dirname(__DIR__, 6) . '/' . $str) . ".php";
+
+
 
         if (!file_exists($file)) {
             throw new RoutingControllerNotFoundException();

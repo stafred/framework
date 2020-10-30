@@ -2,6 +2,9 @@
 
 namespace Stafred\Utils;
 
+use Stafred\Cache\Buffer;
+use Stafred\Cache\CacheStorage;
+use Stafred\Session\SessionHelper;
 use Stafred\Session\SessionInterface;
 use Stafred\Session\SessionDecorator;
 
@@ -15,7 +18,14 @@ final class Session implements SessionInterface
      * @var SessionDecorator|null
      */
     private static $instance = null;
-
+    /**
+     * @var string|null
+     */
+    private static $path = null;
+    /**
+     * @var string|null
+     */
+    private static $name = null;
     /**
      * @return Session
      */
@@ -57,15 +67,41 @@ final class Session implements SessionInterface
         self::getInstance()->setValue($key, $value);
     }
 
-    private function __construct()
+    /**
+     * @return string
+     */
+    public static function path(): string
     {
+        if(self::$path === NULL){
+            self::$path = Buffer::input()->session("symlink");
+        }
+        return self::$path;
     }
 
-    private function __clone()
+    /**
+     * @return bool
+     */
+    public static function exists(): bool
     {
+        return file_exists(self::$path);
+    }
+    
+    /**
+     * @return string
+     */
+    public static function name(): string
+    {
+        if(self::$name === NULL){
+            self::$name = explode("sess_", self::path())[1];
+        }
+        return self::$name;
     }
 
-    private function __wakeup()
+    public static function clear(): void
     {
+        $default = (new SessionHelper())->getDefaultSession();
+        $session = CacheStorage::getAll('session');
+        $clear = Arr::intersect($default, $session);
+        Buffer::output()->putAll()->session($clear);
     }
 }

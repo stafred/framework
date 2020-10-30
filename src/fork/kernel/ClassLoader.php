@@ -22,16 +22,24 @@ final class ClassLoader extends ClassList
     }
 
     /**
-     * @return void
+     * @param bool $async
      */
-    public function mount()
+    public function mount(bool $async)
     {
-        $this->all(Arr::merge(
-            self::KERNEL,
-            self::MASTER,
-            self::SLAVE,
-            self::ADDON
-        ));
+        if($async) {
+            $this->all(Arr::merge(
+                self::ASYNC
+            ));
+        }
+        else {
+            $this->all(Arr::merge(
+                self::KERNEL,
+                self::MASTER,
+                self::SLAVE,
+                self::ADDON
+            ));
+        }
+
         $this->set();
     }
 

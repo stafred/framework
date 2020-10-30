@@ -1,17 +1,17 @@
 <?php
-
 namespace Stafred\Exception\SQL;
+
 
 use Stafred\Exception\BaseException;
 use Stafred\Exception\ExceptionInterface;
 
 /**
- * Class SQLParametersErrorException
- * @package Stafred\Exception
+ * Class SQLSecurityParametersException
+ * @package Stafred\Exception\SQL
  */
 final class SQLSecurityParametersException
     extends BaseException
-    implements ExceptionInterfacenInterface
+    implements ExceptionInterface
 {
     /**
      * SQLSecurityParametersException constructor.

@@ -31,6 +31,12 @@ final class Http extends HeaderHelper implements IHttp
     {
         return '';
     }
+    
+    public static function getRequestUri(): string
+    {
+        $uri = explode("?", $_SERVER["REQUEST_URI"]);
+        return $uri[0];
+    }
 
     public static function getServerName(): string
     {

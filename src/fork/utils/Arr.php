@@ -2,6 +2,8 @@
 
 namespace Stafred\Utils;
 
+use App\Models\kernel\Debug;
+
 /**
  * Class Arr
  * @package Stafred\Utils
@@ -40,6 +42,7 @@ final class Arr
     }
 
     /**
+     * merge without keys
      * @param mixed ...$value
      * @return array
      */
@@ -49,6 +52,7 @@ final class Arr
     }
 
     /**
+     * merge within keys
      * @param mixed ...$value
      * @return array
      */
@@ -69,15 +73,40 @@ final class Arr
     /**
      * @param array $keys
      * @param array $values
+     * @param bool $reverse
      * @return array
      */
-    public static function receive(array $keys, array $values): array
+    public static function receive(array $keys, array $values, bool $reverse = false): array
     {
+        if ($reverse) {
+            $keys = array_flip($keys);
+        }
+
         $original = [];
         foreach ($keys as $key) {
             $original[$key] = NULL;
         }
         return array_intersect_key($values, $original);
+    }
+
+
+    /**
+     * @param array $keys
+     * @param array $values
+     */
+    public static function intersect(array $keys, array $values): array
+    {
+        return array_intersect_key($values, $keys);
+    }
+
+
+    /**
+     * @param array $values
+     * @return array
+     */
+    public static function flip(array $values): array
+    {
+        return array_flip($values);
     }
 
     /**
@@ -87,7 +116,7 @@ final class Arr
      */
     public static function existsKeys(array $keys, array $values): bool
     {
-        return empty(self::missingKeys($keys,$values));
+        return empty(self::missingKeys($keys, $values));
     }
 
     /**
@@ -132,18 +161,21 @@ final class Arr
     /**
      * @param array $value
      * @param array $array
+     * @param bool $reset_keys
      * @return array
      */
-    public static function cutValue(array $value, array $array)
+    public static function cutValue(array $value, array $array, bool $reset_keys = false)
     {
-        return array_diff($array, $value);
+        $arr = array_diff($array, $value);
+        return $reset_keys ? array_values($arr) : $arr;
     }
 
     /**
      * @param array $value
      * @return array
      */
-    public static function removeEmpty(array $value){
+    public static function removeEmpty(array $value)
+    {
         return array_filter($value);
     }
 
@@ -153,5 +185,66 @@ final class Arr
     public static function unique(array $value)
     {
         return array_unique($value);
+    }
+
+    /**
+     * @param $key
+     * @param array $search
+     * @return bool
+     */
+    public static function isKey($key, array $search): bool
+    {
+        return array_key_exists($key, $search);
+    }
+
+    /**
+     * @param $value
+     * @param array $search
+     * @return bool
+     */
+    public static function isValue($value, array $search): bool
+    {
+        return in_array($value, $search);
+    }
+
+    /**
+     * @param array $array
+     */
+    public static function isEmpty(array $array): bool
+    {
+        return empty($array);
+    }
+
+    /**
+     * @param mixed ...$values
+     * @return bool
+     */
+    public static function isValuesEmpty(...$values): bool
+    {
+        $arr = self::toOne($values);
+        $result = true;
+        foreach ($arr as $val) {
+            $result = empty($val);
+            if ($result === false) break;
+        }
+        return $result;
+    }
+
+    /**
+     * может удалить существующие ключи
+     * если ключи совпадают, то массив попадает последний
+     * @param array $current
+     * @param array $change
+     * @return array
+     */
+    public static function renameKeys(array $current, array $change): array
+    {
+        $arr = [];
+        array_walk($current, function ($v, $k) use (&$arr, $change) {
+            /*возможна ошибка при получении пустого значения и ключа перевертыша*/
+            if($change[$k] != NULL) $arr[$change[$k]] = $v;
+            else $arr[$k] = $v;
+        });
+        return $arr;
     }
 }

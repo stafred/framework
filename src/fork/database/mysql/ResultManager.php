@@ -35,11 +35,11 @@ final class ResultManager
     }
 
     /**
-     * @return int
+     * @return mixed
      */
-    public function fetch(): int
+    public function fetch()
     {
-        return $this->count;
+        return $this->statment->fetch(\PDO::FETCH_ASSOC);
     }
 
     /**
@@ -64,11 +64,27 @@ final class ResultManager
     }
 
     /**
+     * @return \stdClass
+     */
+    public function fetchObject(): \stdClass
+    {
+        return $this->statment->fetchObject();
+    }
+
+    /**
      * @return int
      */
     public function rowCount(): int
     {
         return $this->statment->rowCount();
+    }
+
+    /**
+     * @return bool
+     */
+    public function nextRow(): bool
+    {
+        return $this->statment->nextRowset();
     }
 
     /**
@@ -84,7 +100,7 @@ final class ResultManager
      */
     public function isFail(): bool
     {
-        return $this->statment->rowCount() === 0;
+        return $this->statment->errorCode() !== "00000";
     }
 
     /**
@@ -128,5 +144,13 @@ final class ResultManager
     public function id(): int
     {
         return $this->lastID;
+    }
+
+    /**
+     * @return \PDOStatement|null
+     */
+    public function getStatment(): ?\PDOStatement
+    {
+        return $this->statment;
     }
 }

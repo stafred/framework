@@ -18,8 +18,6 @@ final class RequestBuilder
      */
     public function __construct()
     {
-        TimeService::start(__CLASS__);
-
         $this->setUrn();
         $this->setRequest();
     }
@@ -39,7 +37,7 @@ final class RequestBuilder
         
         if(env('setting.request.enable')) {
             foreach ($_REQUEST as $key => $value){
-                if(empty($value)) {
+                if(empty($value) && $value != 0 && $value != 0.0) {
                     $request['identifier'][] = $key;
                 }
                 else {
@@ -47,13 +45,9 @@ final class RequestBuilder
                 }
             }
         }
-        
-        $_REQUEST = NULL;
-        Buffer::output()->request('request', $request);
-    }
 
-    public function __destruct()
-    {
-        TimeService::finish(__CLASS__);
+        $_REQUEST = NULL;
+
+        Buffer::output()->request('request', $request);
     }
 }
