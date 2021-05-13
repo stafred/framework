@@ -2,6 +2,7 @@
 
 namespace Stafred\Session;
 
+use App\Models\Kernel\Debug;
 use Stafred\Cache\Buffer;
 use Stafred\Cache\CacheManager;
 use Stafred\Kernel\TimeService;
@@ -24,7 +25,6 @@ final class SessionWrapper extends SessionHelper
     private function toPack(): void
     {
         $cache = Buffer::input()->getAll()->session();
-
         if(count($cache) > 1) {
             $this->write($cache);
         }

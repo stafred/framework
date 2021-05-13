@@ -171,6 +171,16 @@ final class Arr
     }
 
     /**
+     * @param array $keys
+     * @param array $array
+     * @return array
+     */
+    public static function cutKeys(array $keys, array $array)
+    {
+        return array_diff_key($array, array_flip($keys));
+    }
+
+    /**
      * @param array $value
      * @return array
      */

@@ -14,16 +14,17 @@ final class AsyncRoute extends RouteRegistry
      * @param string $url
      * @param string $controller_method
      */
-    public static function post(string $url, string $controller_method): void
+    public static function post(string $url, string $controller_method)
     {
         self::get($url, $controller_method);
     }
 
     /**
      * @param array $route
+     * @param string|null $prefix
      */
-    public static function group(array $route): void
+    public static function group(array $route, ?string $prefix = NULL)
     {
-        parent::group($route);
+        parent::group($route, $prefix);
     }
 }

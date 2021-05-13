@@ -2,11 +2,13 @@
 
 namespace Stafred\Controller;
 
+use App\Models\Kernel\Debug;
 use Stafred\Cache\Buffer;
 use Stafred\Controller\SearchRoute;
 use Stafred\Exception\Routing\RoutingControllerNoNameException;
 use Stafred\Exception\Routing\RoutingInvalidControllerNameException;
 use Stafred\Exception\Routing\RoutingInvalidMethodNameException;
+use Stafred\Utils\Str;
 
 /**
  * Class ControllerMapper

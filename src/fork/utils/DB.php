@@ -56,19 +56,13 @@ final class DB extends QueryService
     /**
      * @param string $column
      * @param string $table
-     * @param string|NULL $where
-     * @param string|NULL $others
-     * @param array $parameters
+     * @param string|null $where
+     * @param string|null $others
+     * @param array|null $parameters
+     * @param bool $security
      * @return QueryWrapper
      */
-    public static function select(
-        string $column,
-        string $table,
-        string $where = NULL,
-        string $others = NULL,
-        array $parameters = NULL,
-        bool $security = true
-    )
+    public static function select(string $column, string $table, string $where = NULL, string $others = NULL, array $parameters = NULL, bool $security = true): QueryWrapper
     {
         return new QueryWrapper([
             'column' => $column,

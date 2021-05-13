@@ -2,6 +2,7 @@
 
 namespace Stafred\Session;
 
+use App\Models\Kernel\Debug;
 use Stafred\Cache\Buffer;
 use Stafred\Cache\CacheStorage;
 use Stafred\Cookie\CookieHelper;
@@ -39,14 +40,14 @@ class SessionHelper
      * @var array
      */
     protected $defaultSession = [
-        "_name"     => NULL,
-        "_code"     => NULL,
+        "_name" => NULL,
+        "_code" => NULL,
         "_security" => NULL,
-        "_https"    => NULL,
-        "_csrf"     => NULL,
-        "_ip"       => NULL,
-        "_udps"     => NULL,
-        "symlink"   => NULL,
+        "_https" => NULL,
+        "_csrf" => NULL,
+        "_ip" => NULL,
+        "_udps" => NULL,
+        "symlink" => NULL,
     ];
 
     /***
@@ -67,7 +68,8 @@ class SessionHelper
     /**
      * @return Header
      */
-    protected function header(): Header {
+    protected function header(): Header
+    {
         return Header::make();
     }
 
@@ -82,7 +84,7 @@ class SessionHelper
         $this->putAllCache($this->defaultSession);
     }
 
-    protected function recreate()
+    protected function rewrite()
     {
         $this->setIp();
         $this->setOutputCode();
@@ -102,6 +104,14 @@ class SessionHelper
         return $this->setInputSymlink($_name, $_security);
     }
 
+    /**
+     * @return string
+     */
+    public function inspect()
+    {
+        return $this->read();
+    }
+
     protected function get()
     {
         $this->defaultSession = $this->unserialize(
@@ -109,6 +119,9 @@ class SessionHelper
         );
     }
 
+    /**
+     * @param array $value
+     */
     protected function write(array $value)
     {
         file_put_contents(
@@ -180,8 +193,7 @@ class SessionHelper
     {
         if (Http::isAjax()) {
             throw new SessionErrorException();
-        }
-        else {
+        } else {
             $this->header()->redirectIndex();
         }
     }
@@ -201,6 +213,7 @@ class SessionHelper
     {
         return $this->defaultSession['_https'];
     }
+
     /********************/
 
     private function setIp()
@@ -219,7 +232,10 @@ class SessionHelper
     private function setOutputSecurity()
     {
         $this->defaultSession["_security"] = Http::isSecurity()
-            ? Hash::value(substr($_SERVER["SSL_SESSION_ID"], 0, 32), 'whirlpool')
+            ? Hash::value(
+                substr($_SERVER["SSL_SESSION_ID"] ?? env("app.secret.key"), 0, 32),
+                'whirlpool'
+            )
             : Hash::random('whirlpool');
     }
 
@@ -374,8 +390,8 @@ class SessionHelper
     /***********************/
 
     /**
-     * @deprecated var $end
      * @return string
+     * @deprecated var $end
      */
     private function getHeaderName(): string
     {

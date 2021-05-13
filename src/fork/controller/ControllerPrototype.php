@@ -6,6 +6,7 @@ use Stafred\Cache\Buffer;
 use Stafred\Exception\Routing\RoutingControllerNotFoundException;
 use Stafred\Exception\Routing\RoutingControllerNoNameException;
 use Stafred\Exception\Routing\RoutingMethodNotPublicException;
+use Stafred\Utils\Str;
 
 
 /**
@@ -48,7 +49,7 @@ class ControllerPrototype
     public function __construct(ControllerMapper $data)
     {
         $this->namespace = $data->getNamespace();
-        $this->controller = $data->getController();
+        $this->controller = $data->getController($this->dir);
         $this->method = $data->getMethod();
         $this->args = $data->getArgs();
         $this->values = $data->getValues();
@@ -59,6 +60,10 @@ class ControllerPrototype
      */
     public function start()
     {
+        if(preg_match("/^". addslashes($this->dir) . "/i", $this->namespace)){
+            $this->dir = '';
+        }
+
         $this->controller = $this->dir  . $this->namespace . $this->controller;
 
         $this->injectClass();
@@ -136,8 +141,6 @@ class ControllerPrototype
         }
 
         $file = str_replace("\\", "/", dirname(__DIR__, 6) . '/' . $str) . ".php";
-
-
 
         if (!file_exists($file)) {
             throw new RoutingControllerNotFoundException();

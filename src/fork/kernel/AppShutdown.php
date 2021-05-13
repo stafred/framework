@@ -2,6 +2,11 @@
 
 namespace Stafred\Kernel;
 
+use App\Models\Kernel\Debug;
+use Stafred\Session\SessionBuilder;
+use Stafred\Session\SessionHelper;
+use Stafred\Session\SessionWrapper;
+
 /**
  * Class Shutdown
  * @package Stafred\Kernel

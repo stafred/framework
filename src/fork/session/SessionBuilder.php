@@ -1,6 +1,7 @@
 <?php
 namespace Stafred\Session;
 
+use App\Models\Kernel\Debug;
 use Stafred\Cache\CacheManager;
 use Stafred\Cookie\CookieHelper;
 use Stafred\Kernel\TimeService;
@@ -11,7 +12,7 @@ use Stafred\Utils\Http;
  * Class SessionBuilder
  * @package Stafred\Session
  */
-final class SessionBuilder extends SessionHelper
+class SessionBuilder extends SessionHelper
 {
     /**
      * SessionBuilder constructor.
@@ -27,7 +28,6 @@ final class SessionBuilder extends SessionHelper
         }
 
         $this->read();
-
         if($this->missing()) {
             $cookie->remove();
             $this->create();
@@ -35,14 +35,13 @@ final class SessionBuilder extends SessionHelper
         }
 
         $this->get();
-
         if($this->failed()) {
             $cookie->remove();
             $this->create();
             return;
         }
         else {
-            $this->recreate();
+            $this->rewrite();
         }
     }
 }
