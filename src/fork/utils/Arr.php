@@ -257,4 +257,19 @@ final class Arr
         });
         return $arr;
     }
+
+    /**
+     * @param $items
+     * @return array
+     */
+    public static function removeNumericKeys($items)
+    {
+        $result = [];
+        foreach ($items as $key => $value){
+            if(is_string($key)) {
+                $result[$key] = $value;
+            }
+        }
+        return $result;
+    }
 }
