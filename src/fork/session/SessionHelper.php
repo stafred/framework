@@ -128,6 +128,7 @@ class SessionHelper
             $this->getSymlink(),
             $this->serialize($value)
         );
+        @chmod($this->getSymlink(), 0777);
     }
 
     /**
