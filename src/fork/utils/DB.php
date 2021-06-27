@@ -2,6 +2,8 @@
 
 namespace Stafred\Utils;
 
+use Stafred\Database\Mysql\OnInstructionSql;
+use Stafred\Database\Mysql\OnQuery;
 use Stafred\Database\Mysql\QueryService;
 use Stafred\Database\Mysql\QueryWrapper;
 
@@ -11,6 +13,13 @@ use Stafred\Database\Mysql\QueryWrapper;
  */
 final class DB extends QueryService
 {
+    /**
+     * @return OnInstructionSql
+     */
+    public static function on(): OnInstructionSql {
+        return new OnQuery();
+    }
+
     /**
      * <pre style="color:#ff9900">
      * DB::all([

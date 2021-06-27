@@ -10,11 +10,12 @@ final class Json
 {
     /**
      * @param array $value
+     * @param bool $unicode
      * @return false|string
      */
-    public static function encode(array $value)
+    public static function encode(array $value, bool $unicode = true)
     {
-        return json_encode($value);
+        return json_encode($value, $unicode == true ? JSON_UNESCAPED_UNICODE : 0);
     }
 
     /**

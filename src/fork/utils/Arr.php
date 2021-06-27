@@ -272,4 +272,42 @@ final class Arr
         }
         return $result;
     }
+
+    /**
+     * удаляет ключ в многомерном массиве первого уровня
+     * @param array $arr
+     * @param string $key
+     */
+    public static function removeKey(array $arr, string $key)
+    {
+        $result = [];
+        array_filter($arr, function($item) use ($key, &$result) {
+            if($item instanceof \StdClass){
+                unset($item->{$key});
+            }
+            else {
+                unset($item[$key]);
+            }
+            $result[] = $item;
+            return true;
+        });
+        return $result;
+    }
+
+    /**
+     * удаляет ключи в многомерном массиве первого уровня
+     * @param array $arr
+     * @param array $keys
+     * @return array
+     */
+    public static function removeKeys(array $arr, array $keys)
+    {
+        $result = [];
+        foreach ($arr as $k => $v){
+            if(!array_key_exists($k, $keys)){
+                $result[$k] = $v;
+            }
+        }
+        return $result;
+    }
 }

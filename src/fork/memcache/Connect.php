@@ -44,13 +44,13 @@ class Connect
      * @param string $key
      * @return mixed
      */
-    public function get(string $key)
+    public function get(string $key, bool $object = false)
     {
         $buffer = $this->memcached->get($key);
         if($this->memcached->getResultCode() == \Memcached::RES_NOTFOUND){
             throw new MemcacheKeyNotFoundException();
         }
-        return $buffer;
+        return $object == false ? $buffer : (object)$buffer;
     }
 
     /**
